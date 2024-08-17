@@ -1,6 +1,5 @@
 import streamlit as st
 from models import User, Post
-from werkzeug.utils import secure_filename
 from env.user_auth import ADMIN_PASSWORD
 
 
