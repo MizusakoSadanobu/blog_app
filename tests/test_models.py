@@ -1,17 +1,21 @@
 import sys
 import os
 from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from models import Base, User, Post
+
+# モジュールパスを追加
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 # テスト用のSQLiteインメモリデータベースを使用
 DATABASE_URL = 'sqlite:///:memory:'
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 # テストデータベースのセットアップとクリーンアップ
 @pytest.fixture(scope='function')
@@ -21,6 +25,7 @@ def session():
     yield session
     session.close()
     Base.metadata.drop_all(bind=engine)
+
 
 def test_create_user(session):
     """
@@ -39,6 +44,7 @@ def test_create_user(session):
     assert user.username == "testuser"
     assert user.verify_password(password)  # パスワードが正しくハッシュされていることを確認
     assert user.is_admin is False  # デフォルトで管理者ではないことを確認
+
 
 def test_create_post(session):
     """
@@ -60,6 +66,7 @@ def test_create_post(session):
     assert post.content == "This is a test post."
     assert post.author.username == "testuser"  # 投稿の作成者が正しいユーザーであることを確認
 
+
 def test_user_post_relationship(session):
     """
     Test the relationship between User and Post.
@@ -79,6 +86,5 @@ def test_user_post_relationship(session):
 
     assert retrieved_user is not None
     assert len(retrieved_user.posts) == 2  # ユーザーが2つの投稿を持っていることを確認
-
     assert retrieved_user.posts[0].title == "Test Post 1"
     assert retrieved_user.posts[1].title == "Test Post 2"
