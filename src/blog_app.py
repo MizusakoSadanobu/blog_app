@@ -111,7 +111,7 @@ class BlogApp:
                         key=f"edit_{post.id}"
                 ) == "Edit":
                     self.edit_post(post)
-                if st.button(f"Delete"):
+                if st.button("Delete"):
                     self.session.delete(post)
                     self.session.commit()
                     st.success("Post deleted successfully!")
