@@ -2,8 +2,6 @@ name: Deploy Streamlit App
 
 on:
   push:
-    branches:
-      - main  # mainブランチにプッシュされたときにワークフローを実行
 
 jobs:
   deploy:
