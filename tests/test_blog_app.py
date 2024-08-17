@@ -1,9 +1,18 @@
 import pytest
 from unittest.mock import MagicMock, patch
+import os
 
 from src.blog_app import BlogApp
 from src.models import User, Post
-from env.user_auth import ADMIN_PASSWORD
+
+import yaml
+
+is_github_actions = os.getenv('GITHUB_ACTIONS') == 'true'
+if is_github_actions:
+    ADMIN_PASSWORD = "admin_pass"
+else:
+    with open('./env/user_auth.yml') as f:
+        ADMIN_PASSWORD = yaml.safe_load(f)["admin_password"]
 
 
 @pytest.fixture
