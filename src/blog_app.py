@@ -86,25 +86,8 @@ class BlogApp:
     def show_posts(self):
         """Display and manage blog posts."""
         st.title("My Blog")
-
         if st.session_state['user']:
-            st.header("Create a new post")
-            title = st.text_input("Title")
-            content = st.text_area("Content")
-
-            if st.button("Publish"):
-                if title and content:
-                    new_post = Post(
-                        title=title,
-                        content=content,
-                        author=st.session_state['user']
-                    )
-                    self.session.add(new_post)
-                    self.session.commit()
-                    st.success("Post published successfully!")
-                    st.rerun()
-                else:
-                    st.error("Title and Content are required!")
+            self.create_post()
 
         st.header("Posts")
         posts = self.session.query(Post).order_by(
@@ -128,12 +111,31 @@ class BlogApp:
                         key=f"edit_{post.id}"
                 ) == "Edit":
                     self.edit_post(post)
-                if st.button(f"Delete {post.id}"):
+                if st.button(f"Delete"):
                     self.session.delete(post)
                     self.session.commit()
                     st.success("Post deleted successfully!")
                     st.rerun()
             st.write("---")
+
+    def create_post(self):
+        st.header("Create a new post")
+        title = st.text_input("Title")
+        content = st.text_area("Content")
+
+        if st.button("Publish"):
+            if title and content:
+                new_post = Post(
+                    title=title,
+                    content=content,
+                    author=st.session_state['user']
+                )
+                self.session.add(new_post)
+                self.session.commit()
+                st.success("Post published successfully!")
+                st.rerun()
+            else:
+                st.error("Title and Content are required!")
 
     def edit_post(self, post):
         """Edit an existing post."""
