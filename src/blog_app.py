@@ -1,5 +1,5 @@
 import streamlit as st
-from models import User, Post
+from src.models import User, Post
 from env.user_auth import ADMIN_PASSWORD
 
 
