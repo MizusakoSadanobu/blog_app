@@ -17,32 +17,47 @@ class AuthManager(AuthInterface):
             with open('./env/user_auth.yml') as f:
                 return yaml.safe_load(f)["admin_password"]
 
-    def register(self):
+    def get_user_input(self):
+        """Get user input from Streamlit."""
         st.title("Register")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         admin_password = st.text_input("Admin Password", type="password")
+        return username, password, admin_password
 
-        if st.button("Register"):
-            if username and password and (admin_password == self.admin_password):
-                existing_user = self.session.query(User).filter(
-                    User.username == username
-                ).first()
-                if existing_user:
-                    st.error("Username already exists")
-                else:
-                    new_user = User(
-                        username=username,
-                        password_hash=User.hash_password(password),
-                        is_admin=True
-                    )
-                    self.session.add(new_user)
-                    self.session.commit()
-                    st.success("User registered successfully!")
-                    st.session_state['user'] = new_user
-                    st.rerun()
+    def validate_input(self, username, password, admin_password):
+        """Validate the user input."""
+        if not username or not password or not (admin_password == self.admin_password):
+            st.error("All fields are required")
+            return False
+        return True
+
+    def check_existing_user(self, username):
+        """Check if the user already exists."""
+        existing_user = self.session.query(User).filter(User.username == username).first()
+        return existing_user
+
+    def create_user(self, username, password):
+        """Create a new user and save it to the database."""
+        new_user = User(
+            username=username,
+            password_hash=User.hash_password(password),
+            is_admin=True
+        )
+        self.session.add(new_user)
+        self.session.commit()
+        st.success("User registered successfully!")
+        st.session_state['user'] = new_user
+        st.rerun()
+
+    def register(self):
+        """Main method to handle user registration."""
+        username, password, admin_password = self.get_user_input()
+        if st.button("Register") and self.validate_input(username, password, admin_password):
+            if self.check_existing_user(username):
+                st.error("Username already exists")
             else:
-                st.error("All fields are required")
+                self.create_user(username, password)
 
     def login(self):
         st.title("Login")
