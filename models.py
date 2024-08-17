@@ -1,8 +1,11 @@
 # models.py
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, Boolean
+import datetime
+from sqlalchemy import (
+    create_engine, Column, Integer, String, Text,
+    DateTime, ForeignKey, Boolean
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
-import datetime
 from passlib.hash import bcrypt
 
 # データベース接続の設定
@@ -10,10 +13,14 @@ DATABASE_URL = 'sqlite:///blog.db'
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
+
 # Userモデルの定義
 class User(Base):
+    """
+    User object model representing users in the system.
+    """
     __tablename__ = 'users'
-    
+
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
@@ -22,16 +29,26 @@ class User(Base):
     posts = relationship('Post', back_populates='author')
 
     def verify_password(self, password):
+        """
+        Verify if the provided password matches the stored hash.
+        """
         return bcrypt.verify(password, self.password_hash)
 
     @staticmethod
     def hash_password(password):
+        """
+        Hash a plaintext password for storage.
+        """
         return bcrypt.hash(password)
+
 
 # Postモデルの定義
 class Post(Base):
+    """
+    Post object model representing blog posts in the system.
+    """
     __tablename__ = 'posts'
-    
+
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     content = Column(Text, nullable=False)
@@ -39,6 +56,7 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
     author = relationship('User', back_populates='posts')
+
 
 # テーブルの作成
 Base.metadata.create_all(engine)
