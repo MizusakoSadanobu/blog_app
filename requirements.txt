@@ -8,6 +8,7 @@ cffi==1.17.0
 charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
+flake8==7.1.1
 gitdb==4.0.11
 GitPython==3.1.43
 greenlet==3.0.3
@@ -17,6 +18,7 @@ jsonschema==4.23.0
 jsonschema-specifications==2023.12.1
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
+mccabe==0.7.0
 mdurl==0.1.2
 narwhals==1.4.2
 numpy==2.0.1
@@ -27,8 +29,10 @@ pillow==10.4.0
 protobuf==5.27.3
 psycopg2==2.9.9
 pyarrow==17.0.0
+pycodestyle==2.12.1
 pycparser==2.22
 pydeck==0.9.1
+pyflakes==3.2.0
 Pygments==2.18.0
 python-dateutil==2.9.0.post0
 pytz==2024.1
