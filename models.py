@@ -1,11 +1,11 @@
-# models.py
 import datetime
 from sqlalchemy import (
     create_engine, Column, Integer, String, Text,
     DateTime, ForeignKey, Boolean
 )
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import (
+    declarative_base, relationship, sessionmaker
+)
 from passlib.hash import bcrypt
 
 # データベース接続の設定
@@ -14,7 +14,6 @@ engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
 
-# Userモデルの定義
 class User(Base):
     """
     User object model representing users in the system.
@@ -42,7 +41,6 @@ class User(Base):
         return bcrypt.hash(password)
 
 
-# Postモデルの定義
 class Post(Base):
     """
     Post object model representing blog posts in the system.
