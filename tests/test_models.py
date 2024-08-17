@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Base, User, Post
+from src.models import Base, User, Post
 
 
 # テスト用のSQLiteインメモリデータベースを使用
