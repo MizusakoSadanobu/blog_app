@@ -42,6 +42,8 @@ def register():
                 session.add(new_user)
                 session.commit()
                 st.success("User registered successfully!")
+                st.session_state['user'] = new_user
+                st.rerun()
         else:
             st.error("All fields are required")
 
@@ -56,6 +58,7 @@ def login():
         if user and user.verify_password(password):
             st.session_state['user'] = user
             st.success("Logged in successfully!")
+            st.rerun()
         else:
             st.error("Invalid username or password")
 
@@ -75,6 +78,7 @@ def show_posts():
                 session.add(new_post)
                 session.commit()
                 st.success("Post published successfully!")
+                st.rerun()
             else:
                 st.error("Title and Content are required!")
 
@@ -90,10 +94,11 @@ def show_posts():
         if st.session_state['user'] and st.session_state['user'].id == post.user_id:
             if st.radio(label="Edit?", options=("View", "Edit"), key=f"edit_{post.id}")=="Edit":
                 edit_post(post)
-            if st.button(f"Delete {post.id}", key=f"delete_{post.id}"):
+            if st.button(f"Delete {post.id}"):
                 session.delete(post)
                 session.commit()
                 st.success("Post deleted successfully!")
+                st.rerun()
         st.write("---")
 
 # 投稿の編集
@@ -107,9 +112,9 @@ def edit_post(post):
             if title and content:
                 post.title = title
                 post.content = content
-                print(title, content)
                 session.commit()
                 st.success("Post updated successfully!")
+                st.rerun()
             else:
                 st.error("Title and Content are required!")
 
@@ -126,6 +131,7 @@ def manage_users():
                 session.delete(user)
                 session.commit()
                 st.success(f"User {user.username} deleted successfully!")
+                st.rerun()
     else:
         st.error("You do not have permission to access this page.")
 
@@ -137,6 +143,7 @@ if st.session_state['user']:
             manage_users()
     if st.sidebar.button("Logout"):
         st.session_state['user'] = None
+        st.rerun()
 else:
     login_option = st.sidebar.radio("Login/Register", ("Reader", "Login", "Register"))
     if login_option == "Login":
