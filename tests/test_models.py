@@ -1,15 +1,9 @@
-import sys
-import os
-from pathlib import Path
-
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from models import Base, User, Post
 
-# モジュールパスを追加
-sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 # テスト用のSQLiteインメモリデータベースを使用
 DATABASE_URL = 'sqlite:///:memory:'
@@ -50,11 +44,16 @@ def test_create_post(session):
     """
     Test creating a new post associated with a user.
     """
-    user = User(username="testuser", password_hash=User.hash_password("password"))
+    user = User(username="testuser",
+                password_hash=User.hash_password("password"))
     session.add(user)
     session.commit()
 
-    new_post = Post(title="Test Post", content="This is a test post.", author=user)
+    new_post = Post(
+        title="Test Post",
+        content="This is a test post.",
+        author=user
+    )
 
     session.add(new_post)
     session.commit()
@@ -71,12 +70,21 @@ def test_user_post_relationship(session):
     """
     Test the relationship between User and Post.
     """
-    user = User(username="testuser", password_hash=User.hash_password("password"))
+    user = User(username="testuser",
+                password_hash=User.hash_password("password"))
     session.add(user)
     session.commit()
 
-    post1 = Post(title="Test Post 1", content="First post content", author=user)
-    post2 = Post(title="Test Post 2", content="Second post content", author=user)
+    post1 = Post(
+        title="Test Post 1",
+        content="First post content",
+        author=user
+    )
+    post2 = Post(
+        title="Test Post 2",
+        content="Second post content",
+        author=user
+    )
 
     session.add(post1)
     session.add(post2)
