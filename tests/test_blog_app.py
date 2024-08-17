@@ -71,7 +71,6 @@ def test_login_user(mock_st, session):
 @patch('src.blog_app.st')
 def test_create_post(mock_st, session):
     """Test creating a new post."""
-    # Set up a user to log in
     user = User(username='testuser', password_hash=User.hash_password('password'))
     session.add(user)
     session.commit()
@@ -83,12 +82,11 @@ def test_create_post(mock_st, session):
     mock_st.title = MagicMock()
     mock_st.text_input = MagicMock(side_effect=['Test Post'])
     mock_st.text_area = MagicMock(side_effect=['This is a test post.'])
-    mock_st.button = MagicMock(return_value=True)  # Mocking the Publish button to return True
+    mock_st.button = MagicMock(return_value=True)
     mock_st.success = MagicMock()
     mock_st.rerun = MagicMock()
 
-    # Run the show_posts method to create a post
-    app.show_posts()
+    app.create_post()
 
     # Check if the post has been created
     post = session.query(Post).filter_by(title='Test Post').first()
