@@ -1,9 +1,9 @@
 # models.py
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 import datetime
-from passlib.hash import bcrypt  # パスワードハッシュ化用
+from passlib.hash import bcrypt
 
 # データベース接続の設定
 DATABASE_URL = 'sqlite:///blog.db'
@@ -16,8 +16,8 @@ class User(Base):
     
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
-    email = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
+    is_admin = Column(Boolean, default=False)
 
     posts = relationship('Post', back_populates='author')
 
