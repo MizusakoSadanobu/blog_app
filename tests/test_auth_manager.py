@@ -1,17 +1,15 @@
-import pytest
-from unittest.mock import MagicMock, patch, mock_open
 import os
-import yaml
+import pytest
+from unittest.mock import MagicMock, patch
+import streamlit as st
 from src.blog_app import AuthManager
 from src.models import User
-
 
 is_github_actions = os.getenv('GITHUB_ACTIONS') == 'true'
 if is_github_actions:
     ADMIN_PASSWORD = "admin_pass"
 else:
-    with open('./env/user_auth.yml') as f:
-        ADMIN_PASSWORD = yaml.safe_load(f)["admin_password"]
+    ADMIN_PASSWORD = st.secrets.AdminPassword.admin_password
 
 
 @pytest.fixture
@@ -29,16 +27,6 @@ def session():
     yield session
     session.close()
     Base.metadata.drop_all(bind=engine)
-
-
-@patch('os.getenv')
-@patch('builtins.open', new_callable=mock_open,
-       read_data=f"admin_password: '{ADMIN_PASSWORD}'")
-def test_load_admin_password(mock_open, mock_getenv, session):
-    """Test loading of admin password."""
-    auth_manager = AuthManager(session)
-    mock_open.assert_called_with('./env/user_auth.yml')
-    assert auth_manager.admin_password == ADMIN_PASSWORD
 
 
 @patch('src.auth_manager.st')
@@ -65,15 +53,44 @@ def test_get_user_input(mock_st, session):
 
 
 @patch('src.auth_manager.st')
-def test_validate_input(mock_st, session):
-    """Test validation of user input."""
+@patch('src.auth_manager.os')
+def test_load_admin_password(mock_os, mock_st, session):
+    """Test loading admin password based on environment."""
+    # GitHub Actions環境のテスト
+    mock_os.getenv.return_value = 'true'
     auth_manager = AuthManager(session)
+    assert auth_manager.admin_password == 'admin_pass'
 
-    valid = auth_manager.validate_input('testuser', 'password', ADMIN_PASSWORD)
+    # 通常環境のテスト
+    mock_os.getenv.return_value = 'false'
+    mock_st.secrets.AdminPassword.admin_password = 'secure_admin_password'
+    auth_manager = AuthManager(session)
+    assert auth_manager.admin_password == 'secure_admin_password'
+
+
+@patch('src.auth_manager.st')
+def test_validate_input(mock_st, session):
+    """Test validating user input."""
+    auth_manager = AuthManager(session)
+    auth_manager.admin_password = 'admin_pass'
+
+    # 有効な入力
+    valid = auth_manager.validate_input('user1', 'password1', 'admin_pass')
     assert valid is True
+    mock_st.error.assert_not_called()
 
-    invalid = auth_manager.validate_input('', '', 'wrong_pass')
-    assert invalid is False
+    # 無効な入力（ユーザー名が空）
+    valid = auth_manager.validate_input('', 'password1', 'admin_pass')
+    assert valid is False
+    mock_st.error.assert_called_once_with("All fields are required")
+
+    # 無効な入力（パスワードが空）
+    valid = auth_manager.validate_input('user1', '', 'admin_pass')
+    assert valid is False
+
+    # 無効な入力（管理者パスワードが一致しない）
+    valid = auth_manager.validate_input('user1', 'password1', 'wrong_pass')
+    assert valid is False
 
 
 def test_check_existing_user(session):

@@ -18,8 +18,7 @@ class AuthManager(AuthInterface):
         if is_github_actions:
             return "admin_pass"
         else:
-            with open('./env/user_auth.yml') as f:
-                return yaml.safe_load(f)["admin_password"]
+            return st.secrets.AdminPassword.admin_password
 
     def get_user_input(self):
         """Get user input from Streamlit."""
