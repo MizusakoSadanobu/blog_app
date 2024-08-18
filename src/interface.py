@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class AuthInterface(ABC):
     @abstractmethod
     def register(self):
@@ -8,6 +9,7 @@ class AuthInterface(ABC):
     @abstractmethod
     def login(self):
         pass
+
 
 class PostInterface(ABC):
     @abstractmethod

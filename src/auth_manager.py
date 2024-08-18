@@ -4,7 +4,11 @@ import yaml
 import os
 from src.interface import AuthInterface
 
+
 class AuthManager(AuthInterface):
+    """
+    Class for managing auhtntification
+    """
     def __init__(self, session):
         self.session = session
         self.admin_password = self.load_admin_password()
@@ -27,14 +31,21 @@ class AuthManager(AuthInterface):
 
     def validate_input(self, username, password, admin_password):
         """Validate the user input."""
-        if not username or not password or not (admin_password == self.admin_password):
+        if (
+            not username or not password
+            or not (admin_password == self.admin_password)
+        ):
             st.error("All fields are required")
             return False
         return True
 
     def check_existing_user(self, username):
         """Check if the user already exists."""
-        existing_user = self.session.query(User).filter(User.username == username).first()
+        existing_user = self.session.query(
+            User
+        ).filter(
+            User.username == username
+        ).first()
         return existing_user
 
     def create_user(self, username, password):
@@ -53,7 +64,10 @@ class AuthManager(AuthInterface):
     def register(self):
         """Main method to handle user registration."""
         username, password, admin_password = self.get_user_input()
-        if st.button("Register") and self.validate_input(username, password, admin_password):
+        if (
+            st.button("Register")
+            and self.validate_input(username, password, admin_password)
+        ):
             if self.check_existing_user(username):
                 st.error("Username already exists")
             else:

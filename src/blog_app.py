@@ -2,12 +2,13 @@ import streamlit as st
 from src.post_manager import PostManager
 from src.auth_manager import AuthManager
 
+
 class BlogApp:
     def __init__(self, session):
         self.session = session
         self.auth_manager = AuthManager(session)
         self.post_manager = PostManager(session)
-        
+
         if 'user' not in st.session_state:
             st.session_state['user'] = None
         if 'edit' not in st.session_state:

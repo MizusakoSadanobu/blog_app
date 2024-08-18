@@ -1,7 +1,7 @@
 import streamlit as st
-from src.models import Post
 from src.interface import PostInterface
 from src.models import User, Post
+
 
 class PostManager(PostInterface):
     def __init__(self, session):
