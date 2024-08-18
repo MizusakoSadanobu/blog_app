@@ -1,6 +1,5 @@
 import streamlit as st
 from src.models import User
-import yaml
 import os
 from src.interface import AuthInterface
 
